@@ -1,0 +1,19 @@
+{
+  "name": "4s-hero-mmc",
+  "version": "1.0.0",
+  "description": "4S HERO – Waste Segregation Challenge for Malkajgiri Municipal Corporation (MMC), Telangana",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "seed": "node src/seed.js"
+  },
+  "keywords": [
+    "4s-hero",
+    "malkajgiri",
+    "telangana",
+    "waste-segregation",
+    "swachh-bharat"
+  ],
+  "author": "Malkajgiri Municipal Corporation",
+  "license": "Government of Telangana"
+}

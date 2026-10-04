@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Portal | 4S HERO – Malkajgiri Municipal Corporation</title>
+  <link rel="icon" type="image/jpeg" href="/assets/logos/mmc-logo-vertical.jpeg">
+  <!-- Tailwind CSS & FontAwesome -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Ramabhadra&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            mmc: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d'
+            },
+            telangana: {
+              gold: '#eab308',
+              maroon: '#881337',
+              cyan: '#0891b2'
+            },
+            stream: {
+              wet: '#16a34a',
+              dry: '#2563eb',
+              sanitary: '#dc2626',
+              special: '#1f2937'
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+            telugu: ['Ramabhadra', 'Plus Jakarta Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    .telugu-font { font-family: 'Ramabhadra', sans-serif; }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .tab-btn.active {
+      background-color: #166534;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .badge-wet { background-color: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .badge-dry { background-color: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; }
+    .badge-sanitary { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .badge-special { background-color: #f3f4f6; color: #1f2937; border: 1px solid #d1d5db; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
+
+  <!-- ========================================== -->
+  <!-- 1. LOGIN VIEW (Visible when not authenticated) -->
+  <!-- ========================================== -->
+  <div id="loginView" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/90 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
+      <!-- Header with Govt Logos -->
+      <div class="bg-gradient-to-r from-mmc-900 via-mmc-800 to-mmc-700 p-6 text-white text-center relative">
+        <div class="flex items-center justify-center gap-4 mb-3">
+          <img src="/assets/logos/telangana-govt-logo.png" alt="Govt of Telangana" class="h-12 w-auto object-contain bg-white/10 rounded-full p-1">
+          <img src="/assets/logos/mmc-logo-vertical.jpeg" alt="MMC Logo" class="h-12 w-auto object-contain rounded-lg shadow bg-white p-1">
+        </div>
+        <h2 class="text-xl font-bold tracking-tight">Malkajgiri Municipal Corporation</h2>
+        <p class="text-xs text-mmc-100 font-medium">4S HERO Portal • Secure Admin Control Center</p>
+        <div class="absolute top-2 right-2 text-xs bg-yellow-400 text-slate-900 px-2 py-0.5 rounded font-bold">
+          ADMIN
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <div class="p-6">
+        <div id="loginAlert" class="hidden mb-4 p-3 rounded-lg text-sm flex items-start gap-2"></div>
+
+        <form id="adminLoginForm" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              <i class="fa-solid fa-user-shield text-mmc-700 mr-1"></i> Admin Username / User ID
+            </label>
+            <input type="text" id="loginUsername" required autocomplete="username"
+                   placeholder="e.g. admin"
+                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none transition">
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                <i class="fa-solid fa-key text-mmc-700 mr-1"></i> Password
+              </label>
+              <button type="button" id="togglePasswordBtn" class="text-xs text-slate-500 hover:text-slate-800">
+                <i class="fa-regular fa-eye mr-1"></i>Show
+              </button>
+            </div>
+            <input type="password" id="loginPassword" required autocomplete="current-password"
+                   placeholder="Enter your secure password"
+                   class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none transition">
+          </div>
+
+          <div class="pt-2">
+            <button type="submit" id="loginSubmitBtn"
+                    class="w-full py-3 bg-mmc-800 hover:bg-mmc-900 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-lock-open"></i>
+              <span>Authenticate & Sign In</span>
+            </button>
+          </div>
+        </form>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <a href="/" class="hover:text-mmc-700 flex items-center gap-1">
+            <i class="fa-solid fa-arrow-left"></i> Back to Public App
+          </a>
+          <span class="text-slate-400">PBKDF2-SHA512 Encrypted</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 2. ADMIN PORTAL (Main Authenticated Layout) -->
+  <!-- ========================================== -->
+  <div id="adminPortal" class="hidden flex-1 flex flex-col min-h-screen">
+    
+    <!-- Top Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          
+          <!-- Left: Brand info & Mobile menu toggle -->
+          <div class="flex items-center gap-3">
+            <button id="mobileMenuBtn" class="lg:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg">
+              <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+            <img src="/assets/logos/mmc-logo-horizontal.jpeg" alt="MMC Logo" class="h-10 w-auto object-contain">
+            <div class="hidden sm:block pl-2 border-l border-slate-200">
+              <span class="text-xs font-bold text-mmc-900 tracking-wide uppercase block">4S HERO Control Center</span>
+              <span class="text-[11px] text-slate-500">Malkajgiri Municipal Corporation</span>
+            </div>
+          </div>
+
+          <!-- Right: Live User Info & Actions -->
+          <div class="flex items-center gap-3">
+            <a href="/" target="_blank" title="View Public Web App" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-mmc-800 bg-slate-100 hover:bg-slate-200 rounded-lg transition">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+              <span>Public Portal</span>
+            </a>
+
+            <!-- Current Admin User Badge -->
+            <div class="flex items-center gap-2 pl-3 border-l border-slate-200">
+              <div class="w-8 h-8 rounded-full bg-mmc-800 text-white flex items-center justify-center font-bold text-xs" id="userAvatar">
+                A
+              </div>
+              <div class="hidden md:block text-left">
+                <div class="text-xs font-bold text-slate-800 leading-tight" id="userName">Administrator</div>
+                <div class="text-[10px] text-mmc-700 font-semibold" id="userRoleBadge">SUPER ADMIN</div>
+              </div>
+              <button id="logoutBtn" title="Logout" class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition ml-1">
+                <i class="fa-solid fa-right-from-bracket"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace with Sidebar & Tab Content -->
+    <div class="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
+      
+      <!-- Sidebar Navigation -->
+      <aside id="adminSidebar" class="w-64 flex-shrink-0 bg-white rounded-2xl border border-slate-200 p-3 shadow-sm h-fit sticky top-22 hidden lg:block">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 py-2">
+          Management Modules
+        </div>
+        <nav class="space-y-1" id="navTabs">
+          <button data-tab="dashboard" class="tab-btn active w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-chart-pie w-4 text-center"></i>
+            <span>Dashboard & KPIs</span>
+          </button>
+          <button data-tab="participants" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-users w-4 text-center"></i>
+            <span>Participants Master</span>
+          </button>
+          <button data-tab="certificates" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-award w-4 text-center"></i>
+            <span>Certificates Registry</span>
+          </button>
+
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 pt-3 pb-1">
+            Jurisdiction
+          </div>
+          <button data-tab="circles" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-circle-nodes w-4 text-center"></i>
+            <span>Circles Master</span>
+          </button>
+          <button data-tab="wards" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-map-location-dot w-4 text-center"></i>
+            <span>Wards Master</span>
+          </button>
+          <button data-tab="areas" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-location-dot w-4 text-center"></i>
+            <span>Areas / Localities</span>
+          </button>
+
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 pt-3 pb-1">
+            Game & Education
+          </div>
+          <button data-tab="waste" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-recycle w-4 text-center"></i>
+            <span>Waste Master</span>
+          </button>
+          <button data-tab="questions" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-circle-question w-4 text-center"></i>
+            <span>Questions Master</span>
+          </button>
+
+          <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 pt-3 pb-1">
+            Branding & Settings
+          </div>
+          <button data-tab="logos" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-images w-4 text-center"></i>
+            <span>Brand Asset Manager</span>
+          </button>
+          <button data-tab="contact" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-address-book w-4 text-center"></i>
+            <span>Contact & Social CMS</span>
+          </button>
+          <button data-tab="settings" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+            <i class="fa-solid fa-sliders w-4 text-center"></i>
+            <span>Portal & Qualification</span>
+          </button>
+
+          <div id="superAdminSection" class="border-t border-slate-100 pt-2 mt-2">
+            <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider px-3 py-1">
+              System & Security
+            </div>
+            <button data-tab="users" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+              <i class="fa-solid fa-user-gear w-4 text-center"></i>
+              <span>Admin Users (RBAC)</span>
+            </button>
+            <button data-tab="audit" class="tab-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs text-slate-700 hover:bg-slate-100 transition text-left">
+              <i class="fa-solid fa-shield-halved w-4 text-center"></i>
+              <span>Security Audit Logs</span>
+            </button>
+          </div>
+        </nav>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 min-w-0">
+
+        <!-- Global Toast Alert -->
+        <div id="adminToast" class="hidden mb-4 p-4 rounded-xl text-sm shadow-md flex items-center justify-between transition">
+          <div class="flex items-center gap-2" id="toastMessage"></div>
+          <button onclick="document.getElementById('adminToast').classList.add('hidden')" class="text-slate-400 hover:text-slate-700">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- TAB 1: DASHBOARD -->
+        <section id="tab-dashboard" class="tab-pane space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Executive Dashboard</h1>
+              <p class="text-xs text-slate-500">Live operational metrics and citizen engagement analytics</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="loadDashboardStats()" class="px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-rotate-right"></i> Refresh Stats
+              </button>
+              <a href="/api/admin/reports/export?type=participants" target="_blank" class="px-3 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-arrow-down"></i> Export Participants CSV
+              </a>
+            </div>
+          </div>
+
+          <!-- KPI Cards Grid -->
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+              <div class="text-[11px] font-semibold text-slate-500 uppercase">Total Citizens</div>
+              <div class="text-2xl font-extrabold text-slate-900 mt-1" id="kpiTotalParticipants">-</div>
+              <div class="text-[10px] text-mmc-700 font-semibold mt-1">All age groups</div>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+              <div class="text-[11px] font-semibold text-slate-500 uppercase">Today's Players</div>
+              <div class="text-2xl font-extrabold text-blue-600 mt-1" id="kpiTodayParticipants">-</div>
+              <div class="text-[10px] text-slate-400 mt-1">New registrations</div>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+              <div class="text-[11px] font-semibold text-slate-500 uppercase">Games Finished</div>
+              <div class="text-2xl font-extrabold text-purple-600 mt-1" id="kpiTotalCompletions">-</div>
+              <div class="text-[10px] text-purple-700 font-semibold mt-1">Completed runs</div>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+              <div class="text-[11px] font-semibold text-slate-500 uppercase">Certificates</div>
+              <div class="text-2xl font-extrabold text-emerald-600 mt-1" id="kpiTotalCertificates">-</div>
+              <div class="text-[10px] text-emerald-700 font-semibold mt-1">Qualified & Issued</div>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+              <div class="text-[11px] font-semibold text-slate-500 uppercase">Average Score</div>
+              <div class="text-2xl font-extrabold text-amber-600 mt-1" id="kpiAvgScore">-</div>
+              <div class="text-[10px] text-slate-400 mt-1">Overall performance</div>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+              <div class="text-[11px] font-semibold text-slate-500 uppercase">Pass Rate</div>
+              <div class="text-2xl font-extrabold text-rose-600 mt-1" id="kpiPassPercentage">-</div>
+              <div class="text-[10px] text-rose-700 font-semibold mt-1">Qualifying >= 80%</div>
+            </div>
+          </div>
+
+          <!-- Breakdown Charts & Visuals -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Gender Breakdown -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+              <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-venus-mars text-indigo-500"></i> Gender Representation
+              </h3>
+              <div id="genderBreakdownContainer" class="space-y-2 text-xs">
+                <div class="text-slate-400">Loading breakdown...</div>
+              </div>
+            </div>
+
+            <!-- Category Breakdown -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+              <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-people-roof text-emerald-500"></i> Category Distribution
+              </h3>
+              <div id="categoryBreakdownContainer" class="space-y-2 text-xs">
+                <div class="text-slate-400">Loading breakdown...</div>
+              </div>
+            </div>
+
+            <!-- Circle Participation -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm">
+              <h3 class="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-city text-cyan-600"></i> Circle Engagement
+              </h3>
+              <div id="circleBreakdownContainer" class="space-y-2 text-xs">
+                <div class="text-slate-400">Loading circles...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Attempts Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+              <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-amber-500"></i> Recent Challenge Attempts
+              </h3>
+              <span class="text-xs text-slate-400">Latest 8 completions</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">Participant</th>
+                    <th class="px-4 py-3">Circle / Ward</th>
+                    <th class="px-4 py-3">Score</th>
+                    <th class="px-4 py-3">Percentage</th>
+                    <th class="px-4 py-3">Rank Title</th>
+                    <th class="px-4 py-3">Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody id="recentAttemptsBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="6" class="px-4 py-4 text-center text-slate-400">Loading recent attempts...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 2: PARTICIPANTS MASTER -->
+        <section id="tab-participants" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Registered Participants</h1>
+              <p class="text-xs text-slate-500">Search and filter across all age groups, schools, RWAs, and localities</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="/api/admin/reports/export?type=participants" target="_blank" class="px-3.5 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-download"></i> Export CSV
+              </a>
+            </div>
+          </div>
+
+          <!-- Filters Row -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Search</label>
+              <input type="text" id="participantSearchInput" placeholder="Name, School, Mobile..."
+                     class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Circle</label>
+              <select id="participantCircleFilter" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+                <option value="">All Circles</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Ward</label>
+              <select id="participantWardFilter" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+                <option value="">All Wards</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">Category</label>
+              <select id="participantCategoryFilter" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+                <option value="">All Categories</option>
+                <option value="School Student">School Student</option>
+                <option value="College Student">College Student</option>
+                <option value="Citizen">Citizen</option>
+                <option value="SHG Member">SHG Member</option>
+                <option value="Sanitation Worker">Sanitation Worker</option>
+                <option value="Government/Municipal Employee">Government/Municipal Employee</option>
+                <option value="RWA Member">RWA Member</option>
+                <option value="Volunteer">Volunteer</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="flex items-end">
+              <button onclick="loadParticipants()" class="w-full py-1.5 bg-slate-800 text-white rounded-lg text-xs font-semibold hover:bg-slate-900 transition flex items-center justify-center gap-1">
+                <i class="fa-solid fa-filter"></i> Apply Filters
+              </button>
+            </div>
+          </div>
+
+          <!-- Participants Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">Citizen Name</th>
+                    <th class="px-4 py-3">Age / Gender</th>
+                    <th class="px-4 py-3">Category / Organisation</th>
+                    <th class="px-4 py-3">Circle / Ward / Area</th>
+                    <th class="px-4 py-3">Score & Rank</th>
+                    <th class="px-4 py-3">Certificate</th>
+                    <th class="px-4 py-3">Registered</th>
+                  </tr>
+                </thead>
+                <tbody id="participantsTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="8" class="px-4 py-6 text-center text-slate-400">Loading participants...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 3: CERTIFICATES REGISTRY -->
+        <section id="tab-certificates" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Certificates Registry</h1>
+              <p class="text-xs text-slate-500">Audit, verify, and manage all dynamically issued 4S HERO certificates</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="/api/admin/reports/export?type=certificates" target="_blank" class="px-3.5 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-csv"></i> Export Certificates CSV
+              </a>
+            </div>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex items-center gap-3">
+            <div class="flex-1">
+              <input type="text" id="certificateSearchInput" placeholder="Search by Certificate ID (e.g. MMC-4SH-2026-000001) or Participant Name..."
+                     class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+            </div>
+            <button onclick="loadCertificates()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-xs font-semibold hover:bg-slate-900 transition">
+              <i class="fa-solid fa-magnifying-glass mr-1"></i> Search
+            </button>
+          </div>
+
+          <!-- Certificates Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">Certificate ID</th>
+                    <th class="px-4 py-3">Citizen Name</th>
+                    <th class="px-4 py-3">Organisation</th>
+                    <th class="px-4 py-3">Circle / Ward</th>
+                    <th class="px-4 py-3">Score & %</th>
+                    <th class="px-4 py-3">Issue Date</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="certificatesTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="8" class="px-4 py-6 text-center text-slate-400">Loading certificates...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 4: CIRCLES MASTER -->
+        <section id="tab-circles" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Circles Master</h1>
+              <p class="text-xs text-slate-500">Configure administrative municipal circles for Malkajgiri Municipal Corporation</p>
+            </div>
+            <button onclick="openCircleModal()" class="px-3.5 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-plus"></i> Add New Circle
+            </button>
+          </div>
+
+          <!-- Demo Notice -->
+          <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-start gap-2">
+            <i class="fa-solid fa-circle-info text-amber-600 mt-0.5"></i>
+            <div>
+              <strong>Notice:</strong> Initial circle & ward records are seeded with demo data representative of Malkajgiri Municipal Corporation. Any changes made here immediately reflect on public registration forms without modifying code.
+            </div>
+          </div>
+
+          <!-- Circles Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">Code</th>
+                    <th class="px-4 py-3">Circle Name (EN)</th>
+                    <th class="px-4 py-3">Circle Name (TE)</th>
+                    <th class="px-4 py-3">Wards Count</th>
+                    <th class="px-4 py-3">Participants</th>
+                    <th class="px-4 py-3">Order</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="circlesTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="8" class="px-4 py-6 text-center text-slate-400">Loading circles...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 5: WARDS MASTER -->
+        <section id="tab-wards" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Wards Master</h1>
+              <p class="text-xs text-slate-500">Manage ward numbers, mappings to circles, and re-assignments</p>
+            </div>
+            <button onclick="openWardModal()" class="px-3.5 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-plus"></i> Add New Ward
+            </button>
+          </div>
+
+          <!-- Ward Filter Bar -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex items-center gap-3">
+            <label class="text-xs font-semibold text-slate-600">Filter by Circle:</label>
+            <select id="wardCircleFilter" onchange="loadWards()" class="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+              <option value="">All Circles</option>
+            </select>
+          </div>
+
+          <!-- Wards Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">Ward #</th>
+                    <th class="px-4 py-3">Ward Name (EN)</th>
+                    <th class="px-4 py-3">Ward Name (TE)</th>
+                    <th class="px-4 py-3">Parent Circle</th>
+                    <th class="px-4 py-3">Areas Count</th>
+                    <th class="px-4 py-3">Participants</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="wardsTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="8" class="px-4 py-6 text-center text-slate-400">Loading wards...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 6: AREAS MASTER -->
+        <section id="tab-areas" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Areas & Localities Master</h1>
+              <p class="text-xs text-slate-500">Configure colonies, bastis, and neighborhoods mapped to wards</p>
+            </div>
+            <button onclick="openAreaModal()" class="px-3.5 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-plus"></i> Add New Area
+            </button>
+          </div>
+
+          <!-- Area Filter Bar -->
+          <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex items-center gap-3">
+            <label class="text-xs font-semibold text-slate-600">Filter by Ward:</label>
+            <select id="areaWardFilter" onchange="loadAreas()" class="px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+              <option value="">All Wards</option>
+            </select>
+          </div>
+
+          <!-- Areas Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">Area Name (EN)</th>
+                    <th class="px-4 py-3">Area Name (TE)</th>
+                    <th class="px-4 py-3">Pincode</th>
+                    <th class="px-4 py-3">Mapped Ward</th>
+                    <th class="px-4 py-3">Parent Circle</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="areasTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">Loading areas...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 7: WASTE MASTER -->
+        <section id="tab-waste" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Waste Master (Items & Streams)</h1>
+              <p class="text-xs text-slate-500">Manage 4-stream waste classification items, explanations, and mistake tips</p>
+            </div>
+            <button onclick="openWasteItemModal()" class="px-3.5 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-plus"></i> Add Waste Item
+            </button>
+          </div>
+
+          <!-- 4 Stream Summary Cards -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="p-3 rounded-xl border border-green-200 bg-green-50 flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-stream-wet text-white flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-apple-whole"></i></div>
+              <div>
+                <div class="text-xs font-bold text-green-900">🟢 GREEN — Wet Waste</div>
+                <div class="text-[10px] text-green-700">తడి చెత్త (Organic/Compost)</div>
+              </div>
+            </div>
+            <div class="p-3 rounded-xl border border-blue-200 bg-blue-50 flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-stream-dry text-white flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-box-archive"></i></div>
+              <div>
+                <div class="text-xs font-bold text-blue-900">🔵 BLUE — Dry Waste</div>
+                <div class="text-[10px] text-blue-700">పొడి చెత్త (Recyclables)</div>
+              </div>
+            </div>
+            <div class="p-3 rounded-xl border border-red-200 bg-red-50 flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-stream-sanitary text-white flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-biohazard"></i></div>
+              <div>
+                <div class="text-xs font-bold text-red-900">🔴 RED — Sanitary Waste</div>
+                <div class="text-[10px] text-red-700">శానిటరీ వ్యర్థాలు (Pathogenic)</div>
+              </div>
+            </div>
+            <div class="p-3 rounded-xl border border-slate-300 bg-slate-100 flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-stream-special text-white flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <div>
+                <div class="text-xs font-bold text-slate-900">⚫ BLACK — Special-Care</div>
+                <div class="text-[10px] text-slate-600">స్పెషల్ కేర్ (Hazardous/E-waste)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Items Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">Icon</th>
+                    <th class="px-4 py-3">Item (EN)</th>
+                    <th class="px-4 py-3">Item (TE)</th>
+                    <th class="px-4 py-3">Stream / Bin</th>
+                    <th class="px-4 py-3">Educational Explanation</th>
+                    <th class="px-4 py-3">Difficulty</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="wasteItemsTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="8" class="px-4 py-6 text-center text-slate-400">Loading waste items...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 8: QUESTIONS MASTER -->
+        <section id="tab-questions" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Questions Master</h1>
+              <p class="text-xs text-slate-500">Manage quiz questions and explanations across Game Levels</p>
+            </div>
+            <button onclick="openQuestionModal()" class="px-3.5 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-plus"></i> Add Question
+            </button>
+          </div>
+
+          <!-- Questions Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">Level #</th>
+                    <th class="px-4 py-3">Question Text (EN)</th>
+                    <th class="px-4 py-3">Options</th>
+                    <th class="px-4 py-3">Correct Answer</th>
+                    <th class="px-4 py-3">Explanation</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="questionsTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">Loading questions...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 9: BRAND ASSET MANAGER -->
+        <section id="tab-logos" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Brand Asset Manager</h1>
+              <p class="text-xs text-slate-500">Manage official government logos, 4S HERO mascot posters, and placement configurations</p>
+            </div>
+            <button onclick="openLogoModal()" class="px-3.5 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-upload"></i> Upload / Add Official Asset
+            </button>
+          </div>
+
+          <!-- Placement Guideline -->
+          <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-start gap-2">
+            <i class="fa-solid fa-circle-check text-blue-600 mt-0.5"></i>
+            <div>
+              <strong>Official Assets Preserved:</strong> All official MMC and Telangana emblems and original 4S HERO mascots are displayed with preserved proportions without distortion or redraw.
+            </div>
+          </div>
+
+          <!-- Logos Grid -->
+          <div id="logosContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="text-slate-400 text-xs">Loading brand assets...</div>
+          </div>
+        </section>
+
+        <!-- TAB 10: CONTACT & SOCIAL CMS -->
+        <section id="tab-contact" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Contact Information & Social CMS</h1>
+              <p class="text-xs text-slate-500">Update civic helplines, WhatsApp support, office address, and social links</p>
+            </div>
+            <button onclick="saveContactSettings()" class="px-4 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-floppy-disk"></i> Save Contact Settings
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div id="contactSettingsForm" class="space-y-4">
+              <div class="text-slate-400 text-xs">Loading contact fields...</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 11: PORTAL & QUALIFICATION SETTINGS -->
+        <section id="tab-settings" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Portal & Qualification Settings</h1>
+              <p class="text-xs text-slate-500">Configure certificate passing marks, issuing authority, and campaign metadata</p>
+            </div>
+            <button onclick="saveWebsiteSettings()" class="px-4 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-floppy-disk"></i> Save Portal Settings
+            </button>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <!-- Qualifying Score % -->
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Qualifying Score Percentage (%) *
+                </label>
+                <div class="flex items-center gap-2">
+                  <input type="number" id="settingQualifyingScore" min="10" max="100" step="5" value="80"
+                         class="w-32 px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-bold text-slate-800 focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+                  <span class="text-xs text-slate-500">Default is 80%. Required to unlock the Certificate of Achievement.</span>
+                </div>
+              </div>
+
+              <!-- Campaign Tagline -->
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Campaign Tagline / Mission
+                </label>
+                <input type="text" id="settingCampaignTagline" value="Four Streams. One Mission. A Cleaner Malkajgiri."
+                       class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-800 focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+              </div>
+
+              <!-- Mandatory Issuing Authority: Name -->
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Issuing Authority Name *
+                </label>
+                <input type="text" id="settingCommissionerName" value="T. Vinay Krishna Reddy, I.A.S."
+                       class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+                <span class="text-[11px] text-slate-400">Must be exactly: T. Vinay Krishna Reddy, I.A.S.</span>
+              </div>
+
+              <!-- Mandatory Issuing Authority: Designation -->
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Issuing Authority Title / Designation *
+                </label>
+                <input type="text" id="settingCommissionerTitle" value="Commissioner, Malkajgiri Municipal Corporation"
+                       class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-mmc-600 focus:bg-white focus:outline-none">
+                <span class="text-[11px] text-slate-400">Commissioner, Malkajgiri Municipal Corporation</span>
+              </div>
+
+            </div>
+
+            <!-- Signature Asset Area -->
+            <div class="pt-4 border-t border-slate-100">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Designated Authorized Signature Asset (Optional)
+              </label>
+              <p class="text-xs text-slate-500 mb-3">
+                Designated signature area placed above the Commissioner's name. Per guidelines, signatures are not fabricated; administrators may optionally configure an authorized official signature image here.
+              </p>
+              <div class="flex items-center gap-4">
+                <div id="sigPreviewContainer" class="w-48 h-20 bg-slate-50 border border-dashed border-slate-300 rounded-lg flex items-center justify-center overflow-hidden">
+                  <span class="text-xs text-slate-400" id="sigEmptyNote">No Signature Asset</span>
+                  <img id="sigPreviewImg" class="hidden max-h-full max-w-full object-contain" alt="Signature preview">
+                </div>
+                <div>
+                  <input type="file" id="sigFileInput" accept="image/*" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+                  <div class="text-[11px] text-slate-400 mt-1">PNG with transparent background recommended</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- TAB 12: ADMIN USERS (RBAC) -->
+        <section id="tab-users" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Admin Users & Access Control (RBAC)</h1>
+              <p class="text-xs text-slate-500">Manage administrator roles, jurisdiction restrictions, and credentials</p>
+            </div>
+            <button onclick="openUserModal()" class="px-3.5 py-2 bg-mmc-800 text-white rounded-lg text-xs font-semibold hover:bg-mmc-900 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-user-plus"></i> Create Admin User
+            </button>
+          </div>
+
+          <!-- Roles Info Alert -->
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
+            <div class="p-3 bg-purple-50 border border-purple-200 rounded-xl">
+              <strong class="text-purple-900">SUPER ADMIN</strong>
+              <p class="text-slate-600 mt-0.5 text-[11px]">Unrestricted access to all modules, users & security.</p>
+            </div>
+            <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl">
+              <strong class="text-blue-900">CONTENT ADMIN</strong>
+              <p class="text-slate-600 mt-0.5 text-[11px]">Can manage waste master items, questions, and brand logos.</p>
+            </div>
+            <div class="p-3 bg-green-50 border border-green-200 rounded-xl">
+              <strong class="text-green-900">CERTIFICATE ADMIN</strong>
+              <p class="text-slate-600 mt-0.5 text-[11px]">Can audit and revoke certificates & export reports.</p>
+            </div>
+            <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+              <strong class="text-amber-900">REPORT / VIEWER</strong>
+              <p class="text-slate-600 mt-0.5 text-[11px]">Read-only access to metrics, participants, and exports.</p>
+            </div>
+            <div class="p-3 bg-slate-100 border border-slate-200 rounded-xl">
+              <strong class="text-slate-900">CIRCLE / WARD USER</strong>
+              <p class="text-slate-600 mt-0.5 text-[11px]">Restricted exclusively to their assigned jurisdiction.</p>
+            </div>
+          </div>
+
+          <!-- Users Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">Username</th>
+                    <th class="px-4 py-3">Full Name</th>
+                    <th class="px-4 py-3">Email</th>
+                    <th class="px-4 py-3">Role</th>
+                    <th class="px-4 py-3">Jurisdiction</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Created</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="8" class="px-4 py-6 text-center text-slate-400">Loading admin users...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB 13: SECURITY AUDIT LOGS -->
+        <section id="tab-audit" class="tab-pane hidden space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Security Audit Logs</h1>
+              <p class="text-xs text-slate-500">Immutable audit trail of administrator sign-ins, CRUD modifications, and security events</p>
+            </div>
+            <button onclick="loadAuditLogs()" class="px-3.5 py-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-rotate-right"></i> Refresh Logs
+            </button>
+          </div>
+
+          <!-- Audit Table -->
+          <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-600">
+                <thead class="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                  <tr>
+                    <th class="px-4 py-3">Timestamp</th>
+                    <th class="px-4 py-3">User / Admin</th>
+                    <th class="px-4 py-3">Action</th>
+                    <th class="px-4 py-3">Entity</th>
+                    <th class="px-4 py-3">Entity ID</th>
+                    <th class="px-4 py-3">IP Address</th>
+                    <th class="px-4 py-3">Details</th>
+                  </tr>
+                </thead>
+                <tbody id="auditLogsTableBody" class="divide-y divide-slate-100">
+                  <tr><td colspan="7" class="px-4 py-6 text-center text-slate-400">Loading audit logs...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- 3. MODALS CONTAINER -->
+  <!-- ========================================== -->
+
+  <!-- Circle Modal -->
+  <div id="circleModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+      <h3 class="text-lg font-bold text-slate-900 mb-4" id="circleModalTitle">Add Circle</h3>
+      <form id="circleForm" class="space-y-3">
+        <input type="hidden" id="circleId">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Circle Code *</label>
+          <input type="text" id="circleCode" placeholder="e.g. MALKAJGIRI" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs uppercase focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Circle Name (English) *</label>
+          <input type="text" id="circleName" placeholder="e.g. Malkajgiri Circle" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Circle Name (Telugu) *</label>
+          <input type="text" id="circleNameTe" placeholder="e.g. మల్కాజ్‌గిరి సర్కిల్" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-telugu focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Display Order</label>
+            <input type="number" id="circleOrder" value="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+          </div>
+          <div class="flex items-center pt-5">
+            <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+              <input type="checkbox" id="circleIsActive" checked class="rounded text-mmc-600 focus:ring-mmc-500"> Active Status
+            </label>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+          <button type="button" onclick="closeModal('circleModal')" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs bg-mmc-800 text-white font-semibold rounded-lg hover:bg-mmc-900">Save Circle</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Ward Modal -->
+  <div id="wardModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+      <h3 class="text-lg font-bold text-slate-900 mb-4" id="wardModalTitle">Add Ward</h3>
+      <form id="wardForm" class="space-y-3">
+        <input type="hidden" id="wardId">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Parent Circle *</label>
+          <select id="wardCircleSelect" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Ward Number *</label>
+            <input type="text" id="wardNumber" placeholder="e.g. 136" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Display Order</label>
+            <input type="number" id="wardOrder" value="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Ward Name (English) *</label>
+          <input type="text" id="wardName" placeholder="e.g. Neredmet" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Ward Name (Telugu) *</label>
+          <input type="text" id="wardNameTe" placeholder="e.g. నేరెడ్‌మెట్" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-telugu focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div class="flex items-center pt-2">
+          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+            <input type="checkbox" id="wardIsActive" checked class="rounded text-mmc-600 focus:ring-mmc-500"> Active Status
+          </label>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+          <button type="button" onclick="closeModal('wardModal')" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs bg-mmc-800 text-white font-semibold rounded-lg hover:bg-mmc-900">Save Ward</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Area Modal -->
+  <div id="areaModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+      <h3 class="text-lg font-bold text-slate-900 mb-4" id="areaModalTitle">Add Area / Locality</h3>
+      <form id="areaForm" class="space-y-3">
+        <input type="hidden" id="areaId">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Parent Ward *</label>
+          <select id="areaWardSelect" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+            <!-- Loaded dynamically -->
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Area / Locality Name (English) *</label>
+          <input type="text" id="areaName" placeholder="e.g. Kakatiya Nagar" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Area / Locality Name (Telugu) *</label>
+          <input type="text" id="areaNameTe" placeholder="e.g. కాకతీయ నగర్" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-telugu focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Pincode</label>
+            <input type="text" id="areaPincode" value="500047" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+          </div>
+          <div class="flex items-center pt-5">
+            <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+              <input type="checkbox" id="areaIsActive" checked class="rounded text-mmc-600 focus:ring-mmc-500"> Active Status
+            </label>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+          <button type="button" onclick="closeModal('areaModal')" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs bg-mmc-800 text-white font-semibold rounded-lg hover:bg-mmc-900">Save Area</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Waste Item Modal -->
+  <div id="wasteItemModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
+      <h3 class="text-lg font-bold text-slate-900 mb-4" id="wasteModalTitle">Add Waste Master Item</h3>
+      <form id="wasteItemForm" class="space-y-3">
+        <input type="hidden" id="wasteItemId">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Waste Stream (Bin Color) *</label>
+          <select id="wasteItemStreamSelect" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-bold focus:outline-none focus:ring-2 focus:ring-mmc-600">
+            <option value="1">🟢 Green — Wet Waste (తడి చెత్త)</option>
+            <option value="2">🔵 Blue — Dry Waste (పొడి చెత్త)</option>
+            <option value="3">🔴 Red — Sanitary Waste (శానిటరీ వ్యర్థాలు)</option>
+            <option value="4">⚫ Black — Special-Care Waste (స్పెషల్ కేర్)</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Item Name (English) *</label>
+            <input type="text" id="wasteItemName" placeholder="e.g. Banana Peel" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Item Name (Telugu) *</label>
+            <input type="text" id="wasteItemNameTe" placeholder="e.g. అరటి తొక్క" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-telugu focus:outline-none focus:ring-2 focus:ring-mmc-600">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Category</label>
+            <input type="text" id="wasteItemCategory" placeholder="e.g. Kitchen Organics" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">FontAwesome Icon</label>
+            <input type="text" id="wasteItemIcon" placeholder="e.g. fa-carrot" value="fa-trash" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Educational Explanation (English) *</label>
+          <textarea id="wasteItemExplanation" rows="2" placeholder="Why this item belongs in this stream..." required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Educational Explanation (Telugu)</label>
+          <textarea id="wasteItemExplanationTe" rows="2" placeholder="తెలుగు వివరణ..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-telugu focus:outline-none focus:ring-2 focus:ring-mmc-600"></textarea>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Difficulty</label>
+            <select id="wasteItemDifficulty" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+              <option value="Easy">Easy</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+          <div class="flex items-center pt-5">
+            <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+              <input type="checkbox" id="wasteItemIsActive" checked class="rounded text-mmc-600 focus:ring-mmc-500"> Active Status
+            </label>
+          </div>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+          <button type="button" onclick="closeModal('wasteItemModal')" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs bg-mmc-800 text-white font-semibold rounded-lg hover:bg-mmc-900">Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Question Modal -->
+  <div id="questionModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
+      <h3 class="text-lg font-bold text-slate-900 mb-4" id="questionModalTitle">Add Question</h3>
+      <form id="questionForm" class="space-y-3">
+        <input type="hidden" id="questionId">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Game Level # *</label>
+            <select id="questionLevelNumber" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+              <option value="1">Level 1: Which Bin?</option>
+              <option value="2">Level 2: Drag & Drop</option>
+              <option value="3">Level 3: Rapid Fire</option>
+              <option value="4">Level 4: Spot the Mistake</option>
+              <option value="5">Level 5: Match the Waste</option>
+              <option value="6">Level 6: Clean Malkajgiri</option>
+              <option value="7" selected>Level 7: Ultimate 4S Quiz</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Difficulty</label>
+            <select id="questionDifficulty" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+              <option value="Easy">Easy</option>
+              <option value="Medium" selected>Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Question Text (English) *</label>
+          <textarea id="questionText" rows="2" required placeholder="Type the question..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Question Text (Telugu)</label>
+          <textarea id="questionTextTe" rows="2" placeholder="తెలుగు ప్రశ్న..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs font-telugu focus:outline-none focus:ring-2 focus:ring-mmc-600"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Options (Comma separated) *</label>
+          <input type="text" id="questionOptions" placeholder="e.g. Green Bin, Blue Bin, Red Bin, Black Bin" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Correct Answer (Must match one option) *</label>
+          <input type="text" id="questionCorrectAnswer" placeholder="e.g. Green Bin" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Explanation</label>
+          <textarea id="questionExplanation" rows="2" placeholder="Educational takeaway..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600"></textarea>
+        </div>
+        <div class="flex items-center pt-2">
+          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+            <input type="checkbox" id="questionIsActive" checked class="rounded text-mmc-600 focus:ring-mmc-500"> Active Status
+          </label>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+          <button type="button" onclick="closeModal('questionModal')" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs bg-mmc-800 text-white font-semibold rounded-lg hover:bg-mmc-900">Save Question</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Brand Logo Modal -->
+  <div id="logoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+      <h3 class="text-lg font-bold text-slate-900 mb-4" id="logoModalTitle">Brand Asset</h3>
+      <form id="logoForm" class="space-y-3">
+        <input type="hidden" id="logoId">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Asset Name *</label>
+          <input type="text" id="logoName" placeholder="e.g. Official Header Logo" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Placement *</label>
+          <select id="logoPlacement" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+            <option value="Header">Header</option>
+            <option value="Home Page">Home Page</option>
+            <option value="Footer">Footer</option>
+            <option value="Game Pages">Game Pages</option>
+            <option value="Results">Results</option>
+            <option value="Certificate">Certificate</option>
+            <option value="Certificate Verification Page">Certificate Verification Page</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Upload File (or Existing Path)</label>
+          <input type="file" id="logoFileInput" accept="image/*" class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+          <input type="text" id="logoFilePath" placeholder="/assets/logos/..." class="mt-2 w-full px-3 py-1.5 bg-slate-50 border border-slate-300 rounded-lg text-xs text-slate-600 focus:outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Aspect Ratio</label>
+            <select id="logoAspectRatio" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+              <option value="auto">Auto / Preserve Original</option>
+              <option value="1:1">1:1 Square</option>
+              <option value="horizontal">Horizontal Banner</option>
+              <option value="vertical">Vertical Poster</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Display Order</label>
+            <input type="number" id="logoOrder" value="1" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+          </div>
+        </div>
+        <div class="flex items-center pt-2">
+          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+            <input type="checkbox" id="logoIsActive" checked class="rounded text-mmc-600 focus:ring-mmc-500"> Active Status
+          </label>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+          <button type="button" onclick="closeModal('logoModal')" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs bg-mmc-800 text-white font-semibold rounded-lg hover:bg-mmc-900">Save Asset</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin User Modal -->
+  <div id="userModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+      <h3 class="text-lg font-bold text-slate-900 mb-4" id="userModalTitle">Create Admin User</h3>
+      <form id="userForm" class="space-y-3">
+        <input type="hidden" id="adminUserId">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Username *</label>
+          <input type="text" id="userFormUsername" required placeholder="e.g. jwarden" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Full Name *</label>
+          <input type="text" id="userFormFullName" required placeholder="e.g. John Warden" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Email (Optional)</label>
+          <input type="email" id="userFormEmail" placeholder="admin@mmc.telangana.gov.in" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1" id="userPasswordLabel">Password *</label>
+          <input type="password" id="userFormPassword" placeholder="Minimum 8 characters" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Role *</label>
+          <select id="userFormRole" required class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-mmc-600">
+            <option value="SUPER_ADMIN">SUPER ADMIN (Full Access)</option>
+            <option value="CONTENT_ADMIN">CONTENT ADMIN (Waste & Questions)</option>
+            <option value="CERTIFICATE_ADMIN">CERTIFICATE ADMIN (Certificates & Reports)</option>
+            <option value="REPORT_VIEWER">REPORT / VIEWER (Read-only)</option>
+            <option value="CIRCLE_WARD_USER">CIRCLE / WARD USER (Jurisdiction Bound)</option>
+          </select>
+        </div>
+        <div id="jurisdictionFields" class="grid grid-cols-2 gap-3 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Bound Circle</label>
+            <select id="userFormCircle" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none">
+              <option value="">None / All</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Bound Ward</label>
+            <select id="userFormWard" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-xs focus:outline-none">
+              <option value="">None / All</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex items-center pt-2">
+          <label class="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+            <input type="checkbox" id="userFormIsActive" checked class="rounded text-mmc-600 focus:ring-mmc-500"> Active Account
+          </label>
+        </div>
+        <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-100">
+          <button type="button" onclick="closeModal('userModal')" class="px-4 py-2 text-xs text-slate-600 hover:bg-slate-100 rounded-lg">Cancel</button>
+          <button type="submit" class="px-4 py-2 text-xs bg-mmc-800 text-white font-semibold rounded-lg hover:bg-mmc-900">Save User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin JavaScript Application Controller -->
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

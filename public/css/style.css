@@ -1,0 +1,110 @@
+/* Custom styles for 4S HERO Web Application */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Noto+Sans+Telugu:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --color-wet: #16a34a;
+  --color-dry: #2563eb;
+  --color-sanitary: #dc2626;
+  --color-special: #1f2937;
+}
+
+body {
+  font-family: 'Poppins', 'Noto Sans Telugu', system-ui, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Telugu font adjustments */
+.lang-te {
+  font-family: 'Noto Sans Telugu', 'Poppins', sans-serif;
+}
+
+/* Bin styling */
+.bin-wet {
+  background: linear-gradient(145deg, #22c55e, #15803d);
+  box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.4);
+}
+.bin-dry {
+  background: linear-gradient(145deg, #3b82f6, #1d4ed8);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+.bin-sanitary {
+  background: linear-gradient(145deg, #ef4444, #b91c1c);
+  box-shadow: 0 10px 25px -5px rgba(239, 68, 68, 0.4);
+}
+.bin-special {
+  background: linear-gradient(145deg, #374151, #111827);
+  box-shadow: 0 10px 25px -5px rgba(55, 65, 81, 0.4);
+}
+
+/* Drag and Drop styles */
+.draggable-item {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.draggable-item:active {
+  cursor: grabbing;
+  transform: scale(1.05);
+}
+.drag-over {
+  transform: scale(1.08) !important;
+  box-shadow: 0 0 0 4px #fbbf24, 0 15px 30px rgba(0,0,0,0.2) !important;
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.4)); }
+  50% { transform: scale(1.03); filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.7)); }
+}
+.pulse-mascot {
+  animation: pulseGlow 3s infinite ease-in-out;
+}
+
+@keyframes streakFire {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  75% { transform: scale(1.1) rotate(5deg); }
+}
+.streak-active {
+  animation: streakFire 0.6s infinite ease-in-out;
+}
+
+/* Clean Malkajgiri Transformation */
+.scene-container {
+  transition: filter 0.8s ease-in-out, background 0.8s ease-in-out;
+}
+.scene-dirty {
+  filter: saturate(0.6) contrast(1.1) brightness(0.9);
+}
+.scene-clean {
+  filter: saturate(1.2) contrast(1.0) brightness(1.05);
+}
+
+/* Confetti canvas */
+#confettiCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Print styling for certificate */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #certificateCanvas, #certificateCanvas * {
+    visibility: visible;
+  }
+  #certificateCanvas {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    height: auto !important;
+  }
+}
